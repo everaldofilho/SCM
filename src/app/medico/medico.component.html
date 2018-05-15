@@ -1,0 +1,82 @@
+
+<h1>
+  <i class="fa fa-list"></i> Lista de Médicos <span class="badge badge-info" title="Cadastros">{{listaMedicos.length}}</span>
+  <a [routerLink]="['/medico','cadastrar']" class="btn btn-outline-success btn-sm float-right " style="margin-top: 10px;"> Cadastrar</a>
+</h1>
+<div class="alert "*ngIf="alert.type && action == 'listar' " [ngClass]="{'alert-success': alert.type=='success','alert-warning': alert.type=='warning'}">
+    {{alert.message}}
+  </div>
+
+<table class="table table-striped table-hover" *ngIf="listaMedicos.length >=1 else NenhumCadastro">
+    <thead>
+        <tr>
+          <th style="width: 50px;">#ID</th>
+          <th>Médico</th>
+          <th style="width: 50px;"></th>
+          <th style="width: 50px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let medico of listaMedicos; let idx = index">
+          <td>{{idx + 1}}</td>
+          <td>{{medico.nome}} <span class="badge badge-secondary" *ngIf="medico.idade > 0">{{medico.idade}} Anos</span></td>
+          <td><button [routerLink]="['/medico',idx]" class="btn btn-outline-primary btn-sm">Editar</button></td>
+          <td><button (click)="excluir(idx);" class="btn btn-outline-danger btn-sm">Excluir</button></td>
+        </tr>
+    </tbody>
+</table>
+
+<ng-template #NenhumCadastro>
+  <div class="jumbotron text-center">
+    <h1 class="display-4">Nenhum médico cadastrado</h1>
+    <p class="lead">Faça o primeiro cadastro clicando sobre o botão abaixo:</p>
+    <a class="btn btn-success btn-lg" [routerLink]="['/medico','cadastrar']" role="button">Cadastrar</a>
+  </div>
+</ng-template>
+
+<div class="modal in"  style="display: block;" *ngIf='action=="cadastrar" || action=="editar"'>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+      <form  (ngSubmit)="salvar()" #myFormMedico="ngForm">
+        <div class="modal-header">
+          <h5 class="modal-title" *ngIf='action=="cadastrar" else H5editar'>Novo cadastro</h5>
+          <ng-template #H5editar><h5 class="modal-title">Editando Cadastro do Médico</h5></ng-template>
+
+          <button type="button" class="close" [routerLink]="['/medico']" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="alert "*ngIf="alert.type" [ngClass]="{'alert-success': alert.type=='success','alert-warning': alert.type=='warning'}">
+            {{alert.message}}
+          </div>
+          <div class="row">
+            <div class="form-group col-md-12">
+              <b>Nome:</b>
+              <input class="form-control" type="text" placeholder="Nome completo" [(ngModel)]="medico.nome" name="nome" [disabled]="alert.type =='success'" required>
+            </div>
+            <div class="form-group col-4 col-md-6">
+              <b>Idade:</b>
+              <input class="form-control" type="number" [(ngModel)]="medico.idade" name="idade" [disabled]="alert.type =='success'" required>
+            </div>
+            <div class="form-group col-8  col-md-6">
+              <b>Sexo:</b>
+              <select class="form-control" [(ngModel)]="medico.sexo" name="sexo" [disabled]="alert.type =='success'" required>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" type="submit" 
+          [disabled]="alert.type =='success' " 
+          [disabled]="myFormMedico.invalid"
+          >Salvar</button>
+          <button type="button" class="btn btn-secondary"  [routerLink]="['/medico']">Fechar</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  <div *ngIf='action=="cadastrar" || action=="editar"' class="modal-backdrop fade show"></div>
